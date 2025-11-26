@@ -74,7 +74,7 @@ export default function IDCardForm() {
                 value={cardTitle}
                 onChange={(e) => setCardTitle(e.target.value)}
                 className="w-full rounded-md border px-3 py-2 focus:outline-none focus:ring-1"
-                style={{ borderColor: '#003049' }}
+                style={{ borderColor: '#003049', color: '#333' }}
               />
             </div>
 
@@ -114,7 +114,7 @@ export default function IDCardForm() {
                 onChange={(e) => setStudentName(e.target.value)}
                 placeholder="Enter student name"
                 className="w-full rounded-md border px-3 py-2 focus:outline-none focus:ring-1"
-                style={{ borderColor: '#003049' }}
+                style={{ borderColor: '#003049', color: '#333' }}
               />
             </div>
 
@@ -129,7 +129,7 @@ export default function IDCardForm() {
                 onChange={(e) => setStudentId(e.target.value)}
                 placeholder="Enter ID number"
                 className="w-full rounded-md border px-3 py-2 focus:outline-none focus:ring-1"
-                style={{ borderColor: '#003049' }}
+                style={{ borderColor: '#003049', color: '#333' }}
               />
             </div>
 
@@ -144,7 +144,7 @@ export default function IDCardForm() {
                 onChange={(e) => setCourse(e.target.value)}
                 placeholder="Enter course"
                 className="w-full rounded-md border px-3 py-2 focus:outline-none focus:ring-1"
-                style={{ borderColor: '#003049' }}
+                style={{ borderColor: '#003049', color: '#333' }}
               />
             </div>
 
@@ -159,7 +159,7 @@ export default function IDCardForm() {
                 onChange={(e) => setYearLevel(e.target.value)}
                 placeholder="Enter year level"
                 className="w-full rounded-md border px-3 py-2 focus:outline-none focus:ring-1"
-                style={{ borderColor: '#003049' }}
+                style={{ borderColor: '#003049', color: '#333' }}
               />
             </div>
 
@@ -173,7 +173,7 @@ export default function IDCardForm() {
                 value={birthdate}
                 onChange={(e) => setBirthdate(e.target.value)}
                 className="w-full rounded-md border px-3 py-2 focus:outline-none focus:ring-1"
-                style={{ borderColor: '#003049' }}
+                style={{ borderColor: '#003049', color: '#333' }}
               />
             </div>
 
@@ -188,7 +188,7 @@ export default function IDCardForm() {
                 accept="image/*"
                 onChange={handlePhotoUpload}
                 className="w-full rounded-md border px-3 py-2 text-sm focus:outline-none focus:ring-1"
-                style={{ borderColor: '#003049' }}
+                style={{ borderColor: '#003049', color: '#333' }}
               />
             </div>
 
@@ -203,7 +203,7 @@ export default function IDCardForm() {
                 rows={3}
                 placeholder="Any additional information"
                 className="w-full rounded-md border px-3 py-2 focus:outline-none focus:ring-1"
-                style={{ borderColor: '#003049' }}
+                style={{ borderColor: '#003049', color: '#333' }}
               />
             </div>
 
