@@ -13,22 +13,43 @@ export default function SignUpModal({ isOpen, onClose, onSwitchToSignIn }: SignU
 
   if (!isOpen) return null;
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // TODO: Handle sign up with backend
     const formData = new FormData(e.currentTarget);
     const name = formData.get('name') as string;
     const email = formData.get('email') as string;
-    
-    // Mock sign up - will be replaced with actual API call
-    // For now, simulate successful sign up and auto sign in
-    signIn({
-      id: Date.now().toString(),
-      name: name,
-      email: email,
-    });
-    
-    onClose(); // Close modal after successful sign up
+    const password = formData.get('password') as string;
+    const confirmPassword = formData.get('confirmPassword') as string;
+
+    if (password !== confirmPassword) {
+      alert('Passwords do not match');
+      return;
+    }
+
+    try {
+      const response = await fetch('/api/auth/signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email, password }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.success) {
+        // Auto sign in after successful sign up
+        signIn({
+          id: data.user.id.toString(),
+          name: data.user.name,
+          email: data.user.email,
+        });
+        onClose();
+      } else {
+        alert(data.error || 'Sign up failed');
+      }
+    } catch (error) {
+      console.error('Sign up error:', error);
+      alert('Failed to create account. Please try again.');
+    }
   };
 
   return (
@@ -89,6 +110,7 @@ export default function SignUpModal({ isOpen, onClose, onSwitchToSignIn }: SignU
             </label>
             <input
               type="password"
+              name="password"
               required
               className="w-full rounded-md border px-3 py-2 focus:outline-none focus:ring-1"
               style={{ borderColor: '#003049', color: '#333' }}
@@ -102,6 +124,7 @@ export default function SignUpModal({ isOpen, onClose, onSwitchToSignIn }: SignU
             </label>
             <input
               type="password"
+              name="confirmPassword"
               required
               className="w-full rounded-md border px-3 py-2 focus:outline-none focus:ring-1"
               style={{ borderColor: '#003049', color: '#333' }}

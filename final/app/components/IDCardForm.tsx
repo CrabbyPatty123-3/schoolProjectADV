@@ -29,7 +29,7 @@ export default function IDCardForm() {
   const [showSignIn, setShowSignIn] = useState(false);
   const [showSignUp, setShowSignUp] = useState(false);
 
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
   const photoInputRef = useRef<HTMLInputElement>(null);
 
   const handlePhotoUpload = (e: ChangeEvent<HTMLInputElement>) => {
@@ -58,14 +58,44 @@ export default function IDCardForm() {
     if (photoInputRef.current) photoInputRef.current.value = '';
   };
 
-  const handleSaveID = () => {
-    if (!isAuthenticated) {
+  const handleSaveID = async () => {
+    if (!isAuthenticated || !user) {
       setShowSignIn(true);
       return;
     }
-    // TODO: Save ID to database when backend is ready
-    console.log('Saving ID to database...');
-    alert('ID saved successfully! (Backend integration pending)');
+
+    try {
+      const response = await fetch('/api/id-cards', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          user_id: parseInt(user.id),
+          card_title: cardTitle,
+          header_color: headerColor,
+          student_name: studentName,
+          student_id: studentId,
+          course: course,
+          year_level: yearLevel,
+          birthdate: birthdate || null,
+          photo_url: photoUrl,
+          additional_info: additionalInfo,
+          include_qr_code: includeQRCode,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.success) {
+        alert('ID saved successfully!');
+        // Optionally refresh the saved IDs list
+        window.location.reload();
+      } else {
+        alert(data.error || 'Failed to save ID');
+      }
+    } catch (error) {
+      console.error('Error saving ID:', error);
+      alert('Failed to save ID. Please try again.');
+    }
   };
 
   return (

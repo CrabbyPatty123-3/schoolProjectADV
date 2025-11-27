@@ -13,21 +13,35 @@ export default function SignInModal({ isOpen, onClose, onSwitchToSignUp }: SignI
 
   if (!isOpen) return null;
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // TODO: Handle sign in with backend
     const formData = new FormData(e.currentTarget);
     const email = formData.get('email') as string;
-    
-    // Mock user - will be replaced with actual API call
-    // For now, simulate successful sign in
-    signIn({
-      id: '1',
-      name: email.split('@')[0] || 'User',
-      email: email,
-    });
-    
-    onClose(); // Close modal after successful sign in
+    const password = formData.get('password') as string;
+
+    try {
+      const response = await fetch('/api/auth/signin', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.success) {
+        signIn({
+          id: data.user.id.toString(),
+          name: data.user.name,
+          email: data.user.email,
+        });
+        onClose();
+      } else {
+        alert(data.error || 'Sign in failed');
+      }
+    } catch (error) {
+      console.error('Sign in error:', error);
+      alert('Failed to sign in. Please try again.');
+    }
   };
 
   return (
