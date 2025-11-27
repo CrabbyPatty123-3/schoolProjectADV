@@ -2,6 +2,10 @@
 
 import { useState, useRef, ChangeEvent } from 'react';
 import CardPreview from './CardPreview';
+import SavedIDs from './SavedIDs';
+import { useAuth } from '../context/AuthContext';
+import SignInModal from './SignInModal';
+import SignUpModal from './SignUpModal';
 
 const HEADER_COLORS = [
   { name: 'Blue', value: '#3b82f6' },
@@ -22,7 +26,10 @@ export default function IDCardForm() {
   const [photoUrl, setPhotoUrl] = useState<string | null>(null);
   const [additionalInfo, setAdditionalInfo] = useState('');
   const [includeQRCode, setIncludeQRCode] = useState(true);
+  const [showSignIn, setShowSignIn] = useState(false);
+  const [showSignUp, setShowSignUp] = useState(false);
 
+  const { isAuthenticated } = useAuth();
   const photoInputRef = useRef<HTMLInputElement>(null);
 
   const handlePhotoUpload = (e: ChangeEvent<HTMLInputElement>) => {
@@ -49,6 +56,16 @@ export default function IDCardForm() {
     setAdditionalInfo('');
     setIncludeQRCode(true);
     if (photoInputRef.current) photoInputRef.current.value = '';
+  };
+
+  const handleSaveID = () => {
+    if (!isAuthenticated) {
+      setShowSignIn(true);
+      return;
+    }
+    // TODO: Save ID to database when backend is ready
+    console.log('Saving ID to database...');
+    alert('ID saved successfully! (Backend integration pending)');
   };
 
   return (
@@ -257,7 +274,7 @@ export default function IDCardForm() {
         </div>
 
         {/* Right Panel - Preview */}
-        <div>
+        <div className="space-y-6">
           <CardPreview
             cardTitle={cardTitle}
             headerColor={headerColor}
@@ -269,9 +286,32 @@ export default function IDCardForm() {
             photoUrl={photoUrl}
             additionalInfo={additionalInfo}
             includeQRCode={includeQRCode}
+            onSignInClick={() => setShowSignIn(true)}
+            onSaveID={handleSaveID}
           />
+
+          {/* Saved IDs Section - Only show when authenticated */}
+          {isAuthenticated && <SavedIDs />}
         </div>
       </div>
+
+      <SignInModal
+        isOpen={showSignIn}
+        onClose={() => setShowSignIn(false)}
+        onSwitchToSignUp={() => {
+          setShowSignIn(false);
+          setShowSignUp(true);
+        }}
+      />
+
+      <SignUpModal
+        isOpen={showSignUp}
+        onClose={() => setShowSignUp(false)}
+        onSwitchToSignIn={() => {
+          setShowSignUp(false);
+          setShowSignIn(true);
+        }}
+      />
     </div>
   );
 }

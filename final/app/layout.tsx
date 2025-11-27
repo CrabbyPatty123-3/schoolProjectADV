@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { AuthProvider } from "./context/AuthContext";
 
 export const metadata: Metadata = {
   title: "IDify - School ID Maker",
@@ -22,7 +23,9 @@ export default function RootLayout({
         />
       </head>
       <body className="antialiased">
-        {children}
+        <AuthProvider>
+          {children}
+        </AuthProvider>
       </body>
     </html>
   );
