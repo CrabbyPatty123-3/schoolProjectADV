@@ -6,9 +6,10 @@ interface SignUpModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSwitchToSignIn: () => void;
+  onSignUpSuccess: () => void;
 }
 
-export default function SignUpModal({ isOpen, onClose, onSwitchToSignIn }: SignUpModalProps) {
+export default function SignUpModal({ isOpen, onClose, onSwitchToSignIn, onSignUpSuccess }: SignUpModalProps) {
   const { signIn } = useAuth();
 
   if (!isOpen) return null;
@@ -36,13 +37,14 @@ export default function SignUpModal({ isOpen, onClose, onSwitchToSignIn }: SignU
       const data = await response.json();
 
       if (response.ok && data.success) {
-        // Auto sign in after successful sign up
+        // Auto sign in after successful sign up (with remember me)
         signIn({
           id: data.user.id.toString(),
           name: data.user.name,
           email: data.user.email,
-        });
+        }, true);
         onClose();
+        onSignUpSuccess(); // Redirect to form
       } else {
         alert(data.error || 'Sign up failed');
       }

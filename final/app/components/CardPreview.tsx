@@ -14,8 +14,6 @@ interface CardPreviewProps {
   photoUrl: string | null;
   additionalInfo: string;
   includeQRCode: boolean;
-  onSignInClick: () => void;
-  onSaveID: () => void;
 }
 
 export default function CardPreview({
@@ -29,11 +27,8 @@ export default function CardPreview({
   photoUrl,
   additionalInfo,
   includeQRCode,
-  onSignInClick,
-  onSaveID,
 }: CardPreviewProps) {
   const cardRef = useRef<HTMLDivElement>(null);
-  const { isAuthenticated } = useAuth();
 
   const downloadAsPNG = async () => {
     if (!cardRef.current) return;
@@ -215,56 +210,6 @@ export default function CardPreview({
         </div>
       </div>
 
-      {/* Action Buttons */}
-      <div className="flex gap-3">
-        {isAuthenticated ? (
-          <button
-            onClick={onSaveID}
-            className="flex flex-1 items-center justify-center gap-2 rounded-md px-4 py-3 text-white transition-colors"
-            style={{ backgroundColor: '#003049' }}
-            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#002439'}
-            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#003049'}
-          >
-            <svg
-              className="h-5 w-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"
-              />
-            </svg>
-            Save ID
-          </button>
-        ) : (
-          <button
-            onClick={onSignInClick}
-            className="flex flex-1 items-center justify-center gap-2 rounded-md px-4 py-3 text-white transition-colors"
-            style={{ backgroundColor: '#c1121f' }}
-            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#a00e1a'}
-            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#c1121f'}
-          >
-            <svg
-              className="h-5 w-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"
-              />
-            </svg>
-            Sign-in to Download
-          </button>
-        )}
-      </div>
     </div>
   );
 }

@@ -1,15 +1,24 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Navbar from './components/Navbar';
 import IDCardForm from './components/IDCardForm';
 import SignInModal from './components/SignInModal';
 import SignUpModal from './components/SignUpModal';
+import { useAuth } from './context/AuthContext';
 
 export default function Home() {
   const [showForm, setShowForm] = useState(false);
   const [showSignIn, setShowSignIn] = useState(false);
   const [showSignUp, setShowSignUp] = useState(false);
+  const { isAuthenticated } = useAuth();
+
+  // Auto-redirect to form if user is authenticated
+  useEffect(() => {
+    if (isAuthenticated) {
+      setShowForm(true);
+    }
+  }, [isAuthenticated]);
 
   if (showForm) {
     return (
@@ -75,6 +84,7 @@ export default function Home() {
           setShowSignIn(false);
           setShowSignUp(true);
         }}
+        onSignInSuccess={() => setShowForm(true)}
       />
 
       <SignUpModal
@@ -84,6 +94,7 @@ export default function Home() {
           setShowSignUp(false);
           setShowSignIn(true);
         }}
+        onSignUpSuccess={() => setShowForm(true)}
       />
     </div>
   );

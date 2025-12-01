@@ -87,10 +87,14 @@ export async function POST(request: NextRequest) {
       card_id: insertResult.insertId,
       message: 'ID card saved successfully',
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error saving ID card:', error);
     return NextResponse.json(
-      { error: 'Failed to save ID card' },
+      { 
+        error: 'Failed to save ID card',
+        details: error.message || 'Unknown error',
+        code: error.code
+      },
       { status: 500 }
     );
   }

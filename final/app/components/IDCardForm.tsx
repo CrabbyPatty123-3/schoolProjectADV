@@ -6,6 +6,7 @@ import SavedIDs from './SavedIDs';
 import { useAuth } from '../context/AuthContext';
 import SignInModal from './SignInModal';
 import SignUpModal from './SignUpModal';
+import SuccessModal from './SuccessModal';
 
 const HEADER_COLORS = [
   { name: 'Blue', value: '#3b82f6' },
@@ -28,6 +29,7 @@ export default function IDCardForm() {
   const [includeQRCode, setIncludeQRCode] = useState(true);
   const [showSignIn, setShowSignIn] = useState(false);
   const [showSignUp, setShowSignUp] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(0);
 
   const { isAuthenticated, user } = useAuth();
   const photoInputRef = useRef<HTMLInputElement>(null);
@@ -58,6 +60,8 @@ export default function IDCardForm() {
     if (photoInputRef.current) photoInputRef.current.value = '';
   };
 
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+
   const handleSaveID = async () => {
     if (!isAuthenticated || !user) {
       setShowSignIn(true);
@@ -86,15 +90,17 @@ export default function IDCardForm() {
       const data = await response.json();
 
       if (response.ok && data.success) {
-        alert('ID saved successfully!');
-        // Optionally refresh the saved IDs list
-        window.location.reload();
+        setShowSuccessModal(true);
+        setRefreshKey(prev => prev + 1); // Trigger refresh of SavedIDs
+        // Dispatch event to refresh SavedIDs
+        window.dispatchEvent(new Event('idCardSaved'));
       } else {
-        alert(data.error || 'Failed to save ID');
+        console.error('Save ID error response:', data);
+        alert(data.error + (data.details ? `: ${data.details}` : '') || 'Failed to save ID. Please make sure the database tables are created by visiting /api/init-db');
       }
     } catch (error) {
       console.error('Error saving ID:', error);
-      alert('Failed to save ID. Please try again.');
+      alert('Failed to save ID. Please try again. Check console for details.');
     }
   };
 
@@ -274,13 +280,13 @@ export default function IDCardForm() {
             {/* Action Buttons */}
             <div className="flex gap-3 pt-4">
               <button
-                onClick={() => {}}
+                onClick={handleSaveID}
                 className="flex-1 rounded-md px-4 py-3 font-medium text-white transition-colors"
                 style={{ backgroundColor: '#003049' }}
                 onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#002439'}
                 onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#003049'}
               >
-                Generate Card
+                Build ID
               </button>
               <button
                 onClick={handleReset}
@@ -316,12 +322,10 @@ export default function IDCardForm() {
             photoUrl={photoUrl}
             additionalInfo={additionalInfo}
             includeQRCode={includeQRCode}
-            onSignInClick={() => setShowSignIn(true)}
-            onSaveID={handleSaveID}
           />
 
           {/* Saved IDs Section - Only show when authenticated */}
-          {isAuthenticated && <SavedIDs />}
+          {isAuthenticated && <SavedIDs key={refreshKey} />}
         </div>
       </div>
 
@@ -332,6 +336,7 @@ export default function IDCardForm() {
           setShowSignIn(false);
           setShowSignUp(true);
         }}
+        onSignInSuccess={() => {}}
       />
 
       <SignUpModal
@@ -341,6 +346,13 @@ export default function IDCardForm() {
           setShowSignUp(false);
           setShowSignIn(true);
         }}
+        onSignUpSuccess={() => {}}
+      />
+
+      <SuccessModal
+        isOpen={showSuccessModal}
+        onClose={() => setShowSuccessModal(false)}
+        message="ID Generated"
       />
     </div>
   );

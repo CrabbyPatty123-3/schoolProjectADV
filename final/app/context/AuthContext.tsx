@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useContext, useState, ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 
 interface User {
   id: string;
@@ -11,7 +11,7 @@ interface User {
 interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
-  signIn: (user: User) => void;
+  signIn: (user: User, rememberMe?: boolean) => void;
   signOut: () => void;
 }
 
@@ -19,13 +19,42 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const signIn = (userData: User) => {
+  // Load user from localStorage on mount (for "Remember me")
+  useEffect(() => {
+    const savedUser = localStorage.getItem('savedUser');
+    const rememberMe = localStorage.getItem('rememberMe') === 'true';
+    
+    if (rememberMe && savedUser) {
+      try {
+        const userData = JSON.parse(savedUser);
+        setUser(userData);
+      } catch (error) {
+        console.error('Error loading saved user:', error);
+        localStorage.removeItem('savedUser');
+        localStorage.removeItem('rememberMe');
+      }
+    }
+    setIsLoading(false);
+  }, []);
+
+  const signIn = (userData: User, rememberMe: boolean = false) => {
     setUser(userData);
+    
+    if (rememberMe) {
+      localStorage.setItem('savedUser', JSON.stringify(userData));
+      localStorage.setItem('rememberMe', 'true');
+    } else {
+      localStorage.removeItem('savedUser');
+      localStorage.removeItem('rememberMe');
+    }
   };
 
   const signOut = () => {
     setUser(null);
+    localStorage.removeItem('savedUser');
+    localStorage.removeItem('rememberMe');
   };
 
   return (

@@ -6,9 +6,10 @@ interface SignInModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSwitchToSignUp: () => void;
+  onSignInSuccess: () => void;
 }
 
-export default function SignInModal({ isOpen, onClose, onSwitchToSignUp }: SignInModalProps) {
+export default function SignInModal({ isOpen, onClose, onSwitchToSignUp, onSignInSuccess }: SignInModalProps) {
   const { signIn } = useAuth();
 
   if (!isOpen) return null;
@@ -18,6 +19,7 @@ export default function SignInModal({ isOpen, onClose, onSwitchToSignUp }: SignI
     const formData = new FormData(e.currentTarget);
     const email = formData.get('email') as string;
     const password = formData.get('password') as string;
+    const rememberMe = (e.currentTarget.querySelector('input[type="checkbox"]') as HTMLInputElement)?.checked || false;
 
     try {
       const response = await fetch('/api/auth/signin', {
@@ -33,8 +35,9 @@ export default function SignInModal({ isOpen, onClose, onSwitchToSignUp }: SignI
           id: data.user.id.toString(),
           name: data.user.name,
           email: data.user.email,
-        });
+        }, rememberMe);
         onClose();
+        onSignInSuccess(); // Redirect to form
       } else {
         alert(data.error || 'Sign in failed');
       }
