@@ -22,3 +22,14 @@ body {
   color: var(--foreground);
   font-family: 'Vend Sans', sans-serif;
 }
+
+/* Hide Next.js dev indicator and build watcher */
+#__next-build-watcher,
+[data-nextjs-toast],
+.nextjs-toast-container,
+[data-nextjs-dialog],
+[data-nextjs-dialog-overlay] {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+}
